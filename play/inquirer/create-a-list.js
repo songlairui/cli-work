@@ -10,6 +10,8 @@
  *    - 每新增一个步骤, 序号 +1
  *      - 重新输入, 序号不增加
  */
+var fs = require("fs");
+var path = require("path");
 var inquirer = require("inquirer");
 var chalk = require("chalk");
 
@@ -72,10 +74,13 @@ async function main() {
     `\n🌴  ${chalk.blue.underline.bold(output.title.toUpperCase())}`
   );
 
-  console.info(
-    output.items
-      .map(item => `- [${item.status ? "x" : " "}] ${item.text}`)
-      .join("\n")
+  const raw = items
+    .map(item => `- [${item.status ? "x" : " "}] ${item.text}`)
+    .join("\n");
+  console.info(raw);
+  fs.writeFileSync(
+    path.resolve(process.cwd(), "_tmp.md"),
+    `## ${title}\n${raw}`
   );
   return output;
 }
