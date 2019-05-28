@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 var path = require("path");
 var inquirer = require("inquirer");
+var execa = require("execa");
 var checkPkgInfo = require("../pre-cmds/checkPkgInfo");
 
 async function main() {
@@ -40,10 +41,18 @@ LOCATED AT ${cwd}
       }
     }
   ]);
-  if (!path.extname(filename).startsWith(".")) {
-    filename = `${filename}.zip`;
+  if (next) {
+    if (!path.extname(filename).startsWith(".")) {
+      filename = `${filename}.zip`;
+    }
+    filename = filename.replace(/\s/g, "-");
+    // `7z a -tzip ${filename} ./* -x!.git -x!*.zip`,
+    const { stdout: zipOut } = await execa.shell(
+      `git archive -o ${filename} HEAD`,
+      { cwd }
+    );
+    console.info("压缩", zipOut, '完成');
   }
-  console.info(" next, filename", next, filename);
 }
 
 module.exports = main;
