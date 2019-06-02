@@ -81,7 +81,7 @@ async function main(action) {
     if (error.next) {
       return main(error.next)
     } else {
-      console.info(error.stack.replace(/.*?\n+/, ''))
+      error.stack && console.info(error.stack.replace(/.*?\n+/, ''))
     }
   }
   process.exit(0)

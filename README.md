@@ -13,3 +13,7 @@
 - [terminal-img] show a picture in terminal
   show verify code if need
   显示百度 Logo
+
+## TODO
+
+统一管理 API urls

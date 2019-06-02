@@ -1,12 +1,15 @@
 var fs = require('fs-extra')
 var inquirer = require('inquirer')
 var semver = require('semver')
+var FormData = require('form-data');
+
 var retrivePkg = require('./retrive-pkg')
 var checkPkgInfo = require('../pre-cmds/checkPkgInfo')
 var { xhttp } = require('../utils/xhttp')
 var { getCurrentId } = require('../utils/get-current-ids')
 var gitLog = require('../utils/git-log')
 var config = require('../state')
+var { getHost } = require('../utils/getters')
 
 module.exports = async function main(packageId) {
     var { cwd, pkgInfo: localPkg } = await checkPkgInfo()
@@ -49,5 +52,16 @@ module.exports = async function main(packageId) {
         version = '0.0.1'
     }
 
-    console.info('log\n', remark, '\n', version, is_built_in, is_nightly, min_engine_version, max_engine_version)
+    var form_data = new FormData()
+    Object.entries({
+        version, is_built_in, is_nightly, min_engine_version, max_engine_version, remark
+    }).forEach(([key, value]) => {
+        form_data.append(key, value)
+    })
+    form_data.append('package', fs.createReadStream(outputFile))
+
+    var POST_URL = `${getHost()}/api/admin/component-package/${currentPkgId}/version`
+
+    var response = await xhttp.post(POST_URL, form_data, { headers: form_data.getHeaders() })
+    console.info('上传成功\n\t', response || '')
 }
