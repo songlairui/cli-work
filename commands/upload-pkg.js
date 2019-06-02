@@ -7,9 +7,10 @@ var retrivePkg = require('./retrive-pkg')
 var checkPkgInfo = require('../pre-cmds/checkPkgInfo')
 var { xhttp } = require('../utils/xhttp')
 var { getCurrentId } = require('../utils/get-current-ids')
-var gitLog = require('../utils/git-log')
+var { gitLog, getLastHash } = require('../utils/git-log')
 var config = require('../state')
 var { getHost } = require('../utils/getters')
+var { extractCommitHash } = require('../utils/str')
 
 module.exports = async function main(packageId) {
     var { cwd, pkgInfo: localPkg } = await checkPkgInfo()
@@ -31,6 +32,12 @@ module.exports = async function main(packageId) {
         throw new Error(`组件包名不匹配 ${pkgInfo.name} !== ${localPkg.name}`)
     }
     var { lastCommit, version: remoteVersion, is_built_in, is_nightly, min_engine_version, max_engine_version } = lastVersion
+    var currentCommit = await getLastHash()
+    if (currentCommit === lastCommit) {
+        console.info(`上次提交相同 ${lastCommit}，无需上传`)
+        // TODO 选择不同的组件包上传， 判断上次commit以前的commit， 无需commit
+        return
+    }
 
     var remark = await gitLog({ from: lastCommit, branch: 'xx' })
     var version

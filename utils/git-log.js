@@ -1,8 +1,9 @@
 var chalk = require('chalk')
 var simpleGit = require('simple-git/promise')
 var defaultDevBranch = 'develop'
+var { extractCommitHash } = require('./str')
 
-module.exports = async function main({ from, to = 'HEAD', cwd, branch } = {}) {
+const gitLog = async function ({ from, to = 'HEAD', cwd, branch } = {}) {
     var devBranch = branch || defaultDevBranch
     var git = simpleGit()
     if (cwd) {
@@ -26,4 +27,19 @@ module.exports = async function main({ from, to = 'HEAD', cwd, branch } = {}) {
     }
     var data = await git.log(logOptions)
     return data.latest.hash
+}
+
+let lastHash = ''
+
+const getLastHash = async function ({ branch = '...' } = {}) {
+    if (!lastHash) {
+        var logs = await gitLog({ branch })
+        lastHash = extractCommitHash(logs)
+    }
+    return lastHash
+}
+
+module.exports = {
+    gitLog,
+    getLastHash
 }
