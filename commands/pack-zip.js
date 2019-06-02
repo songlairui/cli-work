@@ -45,6 +45,7 @@ LOCATED AT ${cwd}, 打包至： ${outputDir}
     {
       type: 'input',
       name: 'filename',
+      default: defaultFilename,
       message: '自定义压缩包名',
       when: answer => {
         return answer.next === 'change-file-name'
@@ -62,7 +63,8 @@ LOCATED AT ${cwd}, 打包至： ${outputDir}
       `git archive -o ${outputFile} HEAD`,
       { cwd }
     )
-    console.info('压缩', zipOut, '完成')
+    config.set(`zip_${pkgInfo.name}`, outputFile)
+    console.info('压缩', zipOut, '完成', outputFile)
   }
 }
 
