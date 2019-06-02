@@ -39,5 +39,5 @@ async function snapAuthCookie(refresh) {
 }
 
 module.exports = async function main() {
-    await snapAuthCookie()
+    await snapAuthCookie(true)
 }

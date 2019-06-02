@@ -12,7 +12,7 @@ var config = require('../state')
 var { getHost } = require('../utils/getters')
 var { extractCommitHash } = require('../utils/str')
 
-module.exports = async function main(packageId) {
+module.exports = async function main() {
     var { cwd, pkgInfo: localPkg } = await checkPkgInfo()
 
     var outputFile = config.get(`zip_${localPkg.name}`)
@@ -26,7 +26,7 @@ module.exports = async function main(packageId) {
         next.next = 'set-package-id'
         throw next
     }
-    var { pkgInfo = {}, lastVersion = {} } = await retrivePkg(packageId)
+    var { pkgInfo = {}, lastVersion = {} } = await retrivePkg(currentPkgId)
 
     if (pkgInfo.name !== localPkg.name) {
         throw new Error(`组件包名不匹配 ${pkgInfo.name} !== ${localPkg.name}`)

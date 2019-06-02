@@ -1,7 +1,7 @@
 var { xhttp } = require('../utils/xhttp')
 var { extractCommitHash } = require('../utils/str')
 
-module.exports = async function main(packageId = '39edd244-133d-04f6-2361-1eda6ac11a59') {
+module.exports = async function main(packageId) {
     if (!packageId || typeof packageId !== 'string') {
         throw new Error(`packageId error: ${packageId}`)
     }
