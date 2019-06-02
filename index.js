@@ -1,16 +1,15 @@
 #!/usr/bin/env node
 var chalk = require('chalk')
 var inquirer = require('inquirer')
-var packZip = require('./commands/pack-zip')
-var setFolder = require('./commands/set-folder')
-var openWeb = require('./commands/open-web')
-var loginWebAdmin = require('./commands/login-web')
 var test = require('./commands/upload-pkg')
-var switchEvn = require('./commands/switch-env')
+var getCurrentIds = require('./utils/get-current-ids')
+
 var config = require('./state')
 
 async function main() {
-  const currentEnv = config.get('current-env')
+  var currentEnv = config.get('current-env')
+  var currentRemotePkgId = (await getCurrentIds())[currentEnv]
+  // const currentPackageId = 
   try {
 
     const { next } = await inquirer.prompt({
@@ -18,29 +17,42 @@ async function main() {
       name: 'next',
       message: '\n===MENU===',
       choices: [
-        '压缩组件包',
-        '打开网页',
-        '设置文件夹',
-        new inquirer.Separator(),
-        '登陆管理后台',
         {
-          name: `切换环境 [${currentEnv || ''}]`,
+          name: '压缩组件包',
+          value: 'pack-zip'
+        },
+        {
+          name: '打开组件包上传网页',
+          value: 'open-web'
+        },
+        new inquirer.Separator(),
+        {
+          name: '设置输出文件夹',
+          value: 'set-folder'
+        },
+        {
+          name: '登陆管理后台',
+          value: 'login-web-admin'
+        },
+        {
+          name: `切换环境 [${currentEnv || '--'}]`,
           value: 'switch-env'
+        },
+        {
+          name: `设置组件包id [${currentRemotePkgId || '--'}]`,
+          value: 'set-package-id'
         },
         'test']
     })
 
     switch (next) {
-      case '压缩组件包':
-        return packZip()
-      case '设置文件夹':
-        return setFolder()
-      case '打开网页':
-        return openWeb()
-      case '登陆管理后台':
-        return await loginWebAdmin()
+      case 'pack-zip':
+      case 'set-folder':
+      case 'open-web':
+      case 'login-web-admin':
       case 'switch-env':
-        return await switchEvn()
+      case 'set-package-id':
+        return await require(`./commands/${next}`)()
       case 'test':
         return await test()
       default:
