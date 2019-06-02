@@ -5,6 +5,8 @@ var inquirer = require('inquirer')
 var execa = require('execa')
 var checkPkgInfo = require('../pre-cmds/checkPkgInfo')
 var config = require('../state')
+var gitLog = require('../utils/git-log')
+var { extractCommitHash } = require('../utils/str')
 
 function getOutputDir(fallback = process.cwd()) {
   var outDir = config.get('zip-out')
@@ -17,7 +19,8 @@ async function main() {
   // 检测当前目录存在 package.json
   var { cwd, pkgInfo } = await checkPkgInfo()
   var outputDir = getOutputDir()
-  var defaultFilename = `${pkgInfo.name}-${pkgInfo.version}.zip`
+  var hash = extractCommitHash(await gitLog())
+  var defaultFilename = `${pkgInfo.name}-${pkgInfo.version}-${hash}.zip`
   var { next, filename = defaultFilename } = await inquirer.prompt([
     {
       type: 'list',

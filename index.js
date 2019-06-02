@@ -60,18 +60,21 @@ async function main(action) {
       })
       action = next
     }
+    // trace-the-log
+
     switch (action) {
+      case '':
+        throw new Error('no ACTION')
+      case 'test':
+        return await test()
       case 'pack-zip':
       case 'set-folder':
       case 'open-web':
       case 'login-web-admin':
       case 'switch-env':
       case 'set-package-id':
-        return await require(`./commands/${action}`)()
-      case 'test':
-        return await test()
       default:
-        console.info('~ End')
+        return await require(`./commands/${action}`)()
     }
   } catch (error) {
     console.info(chalk.yellow(error.message))
