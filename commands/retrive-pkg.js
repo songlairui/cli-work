@@ -1,13 +1,15 @@
 var { xhttp } = require('../utils/xhttp')
 var { extractCommitHash } = require('../utils/str')
+var api = require('../api/admin')
 
 module.exports = async function main(packageId) {
     if (!packageId || typeof packageId !== 'string') {
         throw new Error(`packageId error: ${packageId}`)
     }
-    var infoUrl = `https://paas-test.mypaas.com.cn/api/admin/component-package/${packageId}`
-    var versionUrl = `${infoUrl}/versions?pageSize=4&page=1`
-    var [pkgInfo, pkfVersions] = await Promise.all([infoUrl, versionUrl].map(url => xhttp(url)))
+    var [pkgInfo, pkfVersions] = await Promise.all([
+        api.pkgInfo(packageId),
+        api.pkgVersions(packageId)
+    ])
 
     var { items: [lastVersion = {}] = [] } = pkfVersions
     var { id, remark = '' } = lastVersion

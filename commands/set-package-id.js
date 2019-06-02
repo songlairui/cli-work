@@ -1,15 +1,13 @@
 var _ = require('lodash')
-var inquirer = require('inquirer')
+var chalk = require('chalk')
 var config = require('../state')
-var { xhttp } = require('../utils/xhttp')
 var checkPkgInfo = require('../pre-cmds/checkPkgInfo')
 var { getCurrentIds } = require('../utils/get-current-ids')
-var chalk = require('chalk')
+var api = require('../api/admin')
 
 module.exports = async function main() {
     var { pkgInfo } = await checkPkgInfo()
     var currentEnv = config.get('current-env')
-    var url = `https://paas-test.mypaas.com.cn/api/admin/component-packages`
     var CONFIG_KEY = `remote-package-ids_${pkgInfo.name}`
 
     var currentIds = await getCurrentIds()
@@ -20,7 +18,9 @@ module.exports = async function main() {
         console.info(chalk.blue(Object.entries(currentIds).map(([env, pkgId]) => `${env}\t${pkgId}`).join('\n')))
         console.groupEnd()
     }
-    var { items: [remotePkgInfo] = [] } = await xhttp.get(url, { params: { pageSize: 11, page: 1, name: pkgInfo.name } })
+
+    var { items: [remotePkgInfo] = [] } = await api.listPkgs({ pageSize: 11, page: 1, name: pkgInfo.name })
+
     if (!remotePkgInfo) {
         throw new Error(`PaaS 平台不存在组件包 ${pkgInfo.name}， 先上传`)
     }

@@ -11,6 +11,7 @@ var { gitLog, getLastHash } = require('../utils/git-log')
 var config = require('../state')
 var { getHost } = require('../utils/getters')
 var { extractCommitHash } = require('../utils/str')
+var api = require('../api/admin')
 
 module.exports = async function main() {
     var { cwd, pkgInfo: localPkg } = await checkPkgInfo()
@@ -67,8 +68,6 @@ module.exports = async function main() {
     })
     form_data.append('package', fs.createReadStream(outputFile))
 
-    var POST_URL = `${getHost()}/api/admin/component-package/${currentPkgId}/version`
-
-    var response = await xhttp.post(POST_URL, form_data, { headers: form_data.getHeaders() })
+    var response = await api.uploadPkg(currentPkgId, form_data, { headers: form_data.getHeaders() })
     console.info('上传成功\n\t', response || '')
 }

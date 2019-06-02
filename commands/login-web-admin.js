@@ -2,7 +2,7 @@ var inquirer = require('inquirer')
 var axios = require('axios')
 var config = require('../state')
 
-var LOGIN_URL = 'https://paas-test.mypaas.com.cn/api/auth/admin/login'
+var api = require('../api/admin')
 
 async function askPwd() {
     const adminAccount = config.get('adminAccount') || ''
@@ -26,7 +26,7 @@ async function snapAuthCookie(refresh) {
     if (!account || !password) {
         throw new Error('用户名或密码为空')
     }
-    const { status, headers, data } = await axios.post(LOGIN_URL, {
+    const { status, headers, data } = await api.login({
         account, password
     })
     const { 'set-cookie': cookieToSet = '' } = headers
