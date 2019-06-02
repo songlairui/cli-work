@@ -3,18 +3,25 @@ var chalk = require('chalk')
 var inquirer = require('inquirer')
 var test = require('./commands/upload-pkg')
 var { getCurrentId } = require('./utils/get-current-ids')
-
+var checkPkgInfo = require('./pre-cmds/checkPkgInfo')
 var config = require('./state')
 
 async function main(action) {
   try {
+    var { cwd, pkgInfo: localPkg } = await checkPkgInfo()
+
+    var currentOutputFile = config.get(`zip_${localPkg.name}`)
     var currentEnv = config.get('current-env')
     var currentRemotePkgId = await getCurrentId()
     // const currentPackageId = 
     var choices = [
       {
-        name: '压缩组件包',
+        name: `压缩组件包 [${cwd}]`,
         value: 'pack-zip'
+      },
+      {
+        name: `上传组件包 [${currentOutputFile}]`,
+        value: 'upload-pkg'
       },
       {
         name: '打开组件包上传网页',
@@ -69,11 +76,12 @@ async function main(action) {
   } catch (error) {
     console.info(chalk.yellow(error.message))
     if (error.next) {
-      main(error.next)
+      return main(error.next)
     } else {
       console.info(error.stack.replace(/.*?\n+/, ''))
     }
   }
+  process.exit(0)
 }
 
 main()

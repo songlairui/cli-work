@@ -2,7 +2,7 @@ var chalk = require('chalk')
 var simpleGit = require('simple-git/promise')
 var defaultDevBranch = 'develop'
 
-module.exports = async function main({ from, to, cwd, branch } = {}) {
+module.exports = async function main({ from, to = 'HEAD', cwd, branch } = {}) {
     var devBranch = branch || defaultDevBranch
     var git = simpleGit()
     if (cwd) {
@@ -19,10 +19,10 @@ module.exports = async function main({ from, to, cwd, branch } = {}) {
         logOptions[devBranch] = true
 
     }
-    if (from && to) {
+    if (from) {
         logOptions[`${from}...${to}`] = true
     } else {
-        logOptions['-5'] = true
+        logOptions['-2'] = true
     }
     var data = await git.log(logOptions)
     return data.latest.hash
