@@ -1,5 +1,5 @@
 var axios = require('axios')
-var URLS = require('./url').admin
+var URLS = require('./url.admin')
 var { getHost } = require('../utils/getters')
 var { xhttp } = require('../utils/xhttp')
 
