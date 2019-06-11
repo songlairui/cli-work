@@ -33,6 +33,14 @@ async function main(action) {
         value: 'set-folder'
       },
       {
+        name: '登陆PaaS平台',
+        value: 'login-web-dev'
+      },
+      {
+        name: '选择子账号',
+        value: 'list-sub-accounts'
+      },
+      {
         name: '登陆管理后台',
         value: 'login-web-admin'
       },

@@ -34,7 +34,7 @@ async function snapAuthCookie(refresh) {
     console.info('get', config.get('adminCookieSet'))
     if (data.code === 0) {
         config.set('adminIdentity', JSON.stringify(data.data))
-        config.set('token', JSON.stringify(data.data.token))
+        config.set('adminToken', JSON.stringify(data.data.token))
     }
 }
 
